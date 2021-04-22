@@ -7,13 +7,14 @@ metadata:
     opendatahub.io/modified: "false"
   annotations:
     opendatahub.io/notebook-image-url: "https://github.com/Xaenalt/s2i-minimal-notebook"
-    opendatahub.io/notebook-image-name: "Minimal Notebook Image using Anaconda"
+    opendatahub.io/notebook-image-name: "Anaconda"
     opendatahub.io/notebook-image-desc: "Jupyter notebook image with minimal dependency set to start experimenting with Jupyter environment. Uses Anaconda"
 spec:
   lookupPolicy:
     local: true
   tags:
   - annotations:
+      opendatahub.io/notebook-software: '[{"name":"Python","version":"v3.8.3"}]'
       openshift.io/imported-from: quay.io/modh/s2i-minimal-notebook-anaconda
     from:
       kind: DockerImage
