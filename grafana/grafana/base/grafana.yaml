@@ -5,6 +5,8 @@ metadata:
 spec:
   ingress:
     enabled: True
+  client:
+    preferService: true
   config:
     log:
       mode: "console"

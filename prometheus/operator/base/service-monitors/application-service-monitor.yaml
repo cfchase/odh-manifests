@@ -10,7 +10,7 @@ spec:
     - bearerTokenSecret:
         key: PROMETHEUS_API_TOKEN
         name: jupyterhub
-      port: 8080-tcp # Jupyterhub
+      port: 8081-tcp # Jupyterhub
       path: "/metrics"
   selector:
     matchLabels:

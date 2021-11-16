@@ -48,9 +48,8 @@ function test_airflow() {
     header "Testing Airflow installation"
     os::cmd::expect_success "oc project ${ODHPROJECT}"
     os::cmd::try_until_text "oc get deployment airflow-on-k8s-operator-controller-manager" "airflow-on-k8s-operator-controller-manager" $odhdefaulttimeout $odhdefaultinterval
-    os::cmd::try_until_text "oc get pods -l control-plane=controller-manager --field-selector='status.phase=Running' -o jsonpath='{$.items[*].metadata.name}'" "airflow-on-k8s-operator-controller-manager" $odhdefaulttimeout $odhdefaultinterval
-    runningpods=($(oc get pods -l control-plane=controller-manager --field-selector="status.phase=Running" -o jsonpath="{$.items[*].metadata.name}"))
-    os::cmd::expect_success_and_text "echo ${#runningpods[@]}" "1"
+    os::cmd::try_until_text "oc rollout status deployment/airflow-on-k8s-operator-controller-manager" "successfully rolled out" $odhdefaulttimeout $odhdefaultinterval
+    os::cmd::try_until_text "oc get pods -l control-plane=controller-manager --field-selector='status.phase=Running' -o jsonpath='{$.items[*].metadata.name}'" "airflow-on-k8s-operator-controller-manager" ${odhdefaulttimeout} ${odhdefaultinterval}
     create_airflow
     echo "Sleeping for 2 min after creating airflow"
     sleep 2m
