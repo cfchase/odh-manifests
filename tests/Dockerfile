@@ -1,7 +1,7 @@
 FROM quay.io/centos/centos:stream8
 
 # List of chromedriver versions for download - https://chromedriver.chromium.org/downloads
-ARG CHROMEDRIVER_VER=97.0.4692.71
+ARG CHROMEDRIVER_VER=98.0.4758.102
 ARG ORG=opendatahub-io
 ARG BRANCH=master
 ARG ODS_CI_REPO=https://github.com/red-hat-data-services/ods-ci
