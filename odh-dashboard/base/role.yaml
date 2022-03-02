@@ -4,6 +4,12 @@ metadata:
   name: odh-dashboard
 rules:
   - apiGroups:
+      - '*'
+    resources:
+      - '*'
+    verbs:
+      - '*'
+  - apiGroups:
       - route.openshift.io
     resources:
       - routes
