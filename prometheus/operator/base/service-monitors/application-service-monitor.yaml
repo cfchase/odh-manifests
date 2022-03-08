@@ -12,6 +12,8 @@ spec:
         name: jupyterhub
       port: 8081-tcp # Jupyterhub
       path: "/metrics"
+    - port: nbc-metrics # Notebook Controller
+      path: "/metrics"
   selector:
     matchLabels:
       opendatahub.io/component: "true"

@@ -1,0 +1,131 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notebook-controller-prometheus-mock-exporter
+  labels:
+    app: notebook-controller-prometheus-mock-exporter
+spec:
+  replicas: 1
+  selector:
+    type: RollingUpdate
+    matchLabels:
+      app: notebook-controller-prometheus-mock-exporter
+  template:
+    metadata:
+      labels:
+        app: notebook-controller-prometheus-mock-exporter
+    spec:
+      containers:
+        - name: metrics
+          image: registry.redhat.io/ubi8/go-toolset:1.16.12
+          imagePullPolicy: Always
+          workingDir: /usr/tmp
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #/bin/bash
+              export HOME="$(pwd)"
+              mkdir $(pwd)/go
+              cat <<EOF > go.mod
+              module github.com/opendatahub-io/odh-manifests/tests/resources/notebook-controller
+
+              go 1.16
+
+              require (
+                github.com/kubeflow/kubeflow/components/notebook-controller v0.0.0-20220309223711-d224549f11b6
+                github.com/prometheus/client_golang v1.12.1
+              )
+              EOF
+              cat <<EOF > main.go
+              package main
+
+              import (
+                "log"
+                "net/http"
+                "time"
+
+                "github.com/prometheus/client_golang/prometheus"
+                "github.com/prometheus/client_golang/prometheus/promhttp"
+
+                nbMetrics "github.com/kubeflow/kubeflow/components/notebook-controller/pkg/metrics"
+              )
+
+              func main() {
+                // Expose notebook controller metrics using a custom registry
+                r := prometheus.NewRegistry()
+
+                // Initialize metrics object from the kubeflow upstream project
+                // mockRunningNotebooks is a private field in the nbMetrics.Metrics
+                // structure and it is not exposed, it must be explicitly defined
+                mockRunningNotebooks := prometheus.NewGaugeVec(
+                  prometheus.GaugeOpts{
+                    Name: "notebook_running",
+                    Help: "Current running notebooks in the cluster",
+                  },
+                  []string{"namespace"},
+                )
+                mockMetrics := nbMetrics.NewMetrics(nil)
+
+                // Register notebook controller metrics
+                r.MustRegister(mockRunningNotebooks)                 // notebook_running
+                r.MustRegister(mockMetrics.NotebookCreation)         // notebook_create_total
+                r.MustRegister(mockMetrics.NotebookFailCreation)     // notebook_create_failed_total
+                r.MustRegister(mockMetrics.NotebookCullingCount)     // notebook_culling_total
+                r.MustRegister(mockMetrics.NotebookCullingTimestamp) // last_notebook_culling_timestamp_seconds
+
+                // Set fixed values to notebooks metrics
+                var notebooks = [...]string{"mock-notebook-a", "mock-notebook-b", "mock-notebook-c"}
+                var notebookNamespaces = [...]string{"mock-namespace-a", "mock-namespace-b"}
+
+                for _, notebook := range notebooks {
+                  for _, namespace := range notebookNamespaces {
+                    mockRunningNotebooks.WithLabelValues(namespace).Add(4)
+                    mockMetrics.NotebookCreation.WithLabelValues(namespace).Add(5)
+                    mockMetrics.NotebookFailCreation.WithLabelValues(namespace).Add(1)
+                    mockMetrics.NotebookCullingCount.WithLabelValues(namespace, notebook).Add(4)
+                    mockMetrics.NotebookCullingTimestamp.WithLabelValues(namespace, notebook).Set(float64(time.Now().Unix()))
+                  }
+                }
+
+                // Mock kube-state metrics
+                mockContainerTerminatedReason := prometheus.NewGaugeVec(
+                  prometheus.GaugeOpts{
+                    Name: "kube_pod_container_status_terminated_reason",
+                    Help: "Describes the reason the container is currently in terminated state.",
+                  },
+                  []string{"container", "reason"},
+                )
+                r.MustRegister(mockContainerTerminatedReason) // kube_pod_container_status_terminated_reason
+                mockContainerTerminatedReason.WithLabelValues("notebook-controller-fake", "OOMKilled").Add(2)
+
+                // Expose metrics in localhost:8080/metrics endpoint
+                http.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
+                log.Println("Exposing metrics in localhost:8080/metrics...")
+                log.Fatal(http.ListenAndServe(":8080", nil))
+              }
+              EOF
+              go mod tidy
+              go run .
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notebook-controller-prometheus-mock-exporter
+  labels:
+    app: notebook-controller-prometheus-mock-exporter
+    opendatahub.io/component: "true"
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  selector:
+    app: notebook-controller-prometheus-mock-exporter
+  ports:
+    - name: nbc-metrics
+      port: 8080
+      protocol: TCP
+      targetPort: 8080

@@ -1,0 +1,41 @@
+---
+apiVersion: kubeflow.org/v1
+kind: Notebook
+metadata:
+  name: thoth-minimal-oauth-notebook
+  annotations:
+    notebooks.opendatahub.io/inject-oauth: "true"
+spec:
+  template:
+    spec:
+      containers:
+        - name: thoth-minimal-oauth-notebook
+          image: quay.io/thoth-station/s2i-minimal-notebook:v0.2.2
+          imagePullPolicy: Always
+          workingDir: /opt/app-root/src
+          env:
+            - name: JUPYTER_NOTEBOOK_PORT
+              value: "8888"
+            - name: NOTEBOOK_ARGS
+              value: "--NotebookApp.token='' --NotebookApp.password=''"
+          ports:
+            - name: notebook-port
+              containerPort: 8888
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              scheme: HTTP
+              path: /api
+              port: notebook-port

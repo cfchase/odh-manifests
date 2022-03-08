@@ -1,0 +1,70 @@
+---
+apiVersion: kubeflow.org/v1
+kind: Notebook
+metadata:
+  name: kubeflow-jupyter-oauth-notebook
+  annotations:
+    notebooks.opendatahub.io/inject-oauth: "true"
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsUser: 1000 # jovyan uid
+        runAsGroup: 100
+        fsGroup: 100
+      containers:
+        - name: kubeflow-jupyter-oauth-notebook
+          image: public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.5.0
+          imagePullPolicy: Always
+          env:
+            - name: NB_PREFIX
+              value: /
+          ports:
+            - name: notebook-port
+              containerPort: 8888
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              scheme: HTTP
+              path: /api
+              port: notebook-port
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubeflow-jupyter-oauth-notebook-nonroot-scc
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
+    resourceNames:
+      - nonroot
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kubeflow-jupyter-oauth-notebook-nonroot-scc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubeflow-jupyter-oauth-notebook-nonroot-scc
+subjects:
+  - kind: ServiceAccount
+    name: kubeflow-jupyter-oauth-notebook
