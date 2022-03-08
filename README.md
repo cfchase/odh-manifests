@@ -21,6 +21,7 @@ Open Data Hub is an end-to-end AI/ML platform on top of OpenShift Container Plat
 * [Superset](superset/README.md)
 * [AI Library](ai-library/README.md)
 * [Seldon](odhseldon/README.md)
+* [Pachyderm](odhpachyderm/README.md)
 * Data Catalog
     * [Hue](hue/README.md)
     * [Thrift Server](thriftserver/README.md)

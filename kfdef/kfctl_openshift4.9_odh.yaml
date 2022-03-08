@@ -64,6 +64,11 @@ spec:
   - kustomizeConfig:
       repoRef:
         name: manifests
+        path: model-mesh
+    name: model-mesh
+  - kustomizeConfig:
+      repoRef:
+        name: manifests
         path: odh-dashboard
     name: odh-dashboard
   repos:
