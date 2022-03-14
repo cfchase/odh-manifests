@@ -50,6 +50,11 @@ spec:
         path: prometheus/operator
     name: prometheus-operator
   - kustomizeConfig:
+    repoRef:
+      name: manifests
+      path: notebook-controller/controller
+    name: notebook-controller
+  - kustomizeConfig:
       parameters:
         - name: s3_endpoint_url
           value: "s3.odh.com"
