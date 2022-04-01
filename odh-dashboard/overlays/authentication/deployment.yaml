@@ -10,8 +10,9 @@
       - --tls-cert=/etc/tls/private/tls.crt
       - --tls-key=/etc/tls/private/tls.key
       - --cookie-secret=SECRET
-      - '--openshift-delegate-urls={"/": {"resource": "route", "verb": "get", "name": "odh-dashboard"}}'
+      - '--openshift-delegate-urls={"/": {"group":"*", "resource": "*", "verb": "*", "name": "odh-dashboard"}}'
       - --skip-auth-regex=^/metrics
+      - --pass-user-bearer-token
     image: quay.io/openshift/origin-oauth-proxy:4.8.0
     ports:
       - containerPort: 8443

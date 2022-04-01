@@ -1,0 +1,91 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: odhconfigs.core.opendatahub.io
+spec:
+  group: core.opendatahub.io
+  scope: Namespaced
+  names:
+    plural: odhconfigs
+    singular: odhconfig
+    kind: OdhConfig
+  versions:
+    - name: v1alpha
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - notebookSizes
+              properties:
+                notebookSizes:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - resources
+                    properties:
+                      name:
+                        type: string
+                      resources:
+                        type: object
+                        properties:
+                          requests:
+                            type: object
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                          limits:
+                            type: object
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+---
+apiVersion: core.opendatahub.io/v1alpha
+kind: OdhConfig
+metadata:
+  name: odhconfig
+spec:
+  notebookSizes:
+    - name: Default
+      resources:
+        requests:
+          memory: 0.5Gi
+          cpu: '0.1'
+        limits:
+          memory: 2Gi
+          cpu: '0.1'
+    - name: Small
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: '1'
+        limits:
+          memory: 8Gi
+          cpu: '2'
+    - name: Medium
+      resources:
+        requests:
+          memory: 24Gi
+          cpu: '3'
+        limits:
+          memory: 24Gi
+          cpu: '6'
+    - name: Large
+      resources:
+        requests:
+          memory: 56Gi
+          cpu: '7'
+        limits:
+          memory: 56Gi
+          cpu: '14'
