@@ -1,0 +1,3 @@
+resources:
+  - bases/kubeflow.org_notebooks.yaml
+  # +kubebuilder:scaffold:crdkustomizeresource

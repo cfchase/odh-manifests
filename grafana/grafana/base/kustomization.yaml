@@ -12,6 +12,7 @@ bases:
   - ./argo-dashboards/
   - ./jupyterhub-dashboards/
   - ./kafka-dashboards/
+  - ./notebook-controller-dashboards/
 
 resources:
 - datasource.yaml

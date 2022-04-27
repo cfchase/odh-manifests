@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: notebook-controller
+        kustomize.component: notebook-controller
+    spec:
+      containers:
+        - name: manager
+          image: public.ecr.aws/j1r0q0g6/notebooks/notebook-controller
+          command:
+            - /manager
+          env:
+            - name: USE_ISTIO
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: USE_ISTIO
+            - name: ISTIO_GATEWAY
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: ISTIO_GATEWAY
+            - name: ADD_FSGROUP
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: ADD_FSGROUP
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "1"
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+      serviceAccountName: service-account
