@@ -1,0 +1,16 @@
+apiVersion: kfdef.apps.kubeflow.org/v1
+kind: KfDef
+metadata:
+  name: odh-notebook-controller
+  namespace: opendatahub
+spec:
+  applications:
+  - kustomizeConfig:
+      repoRef:
+        name: manifests
+        path: odh-notebook-controller
+    name: odh-notebook-controller
+  repos:
+  - name: manifests
+    uri: https://github.com/opendatahub-io/odh-manifests/tarball/master
+  version: master

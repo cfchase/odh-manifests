@@ -19,8 +19,8 @@ function test_grafana_functionality() {
     os::cmd::try_until_text "curl -sk https://${uiroute}" "Grafana" ${odhdefaulttimeout} ${odhdefaultinterval}
 
     # Dashboards
-    dashboard_names=("Kafka%20Overview" "Jupyterhub%20SLI/SLO" "JupyterHub%20Usage" "Argo%20Workflow")
-    dashboard_ids=("kafka-overview" "jupyterhub-sli-slo" "jupyterhub-usage" "argo-workflow")
+    dashboard_names=("Kafka%20Overview" "Jupyterhub%20SLI/SLO" "JupyterHub%20Usage" "Argo%20Workflow" "Notebook%20Controller%20SLIs")
+    dashboard_ids=("kafka-overview" "jupyterhub-sli-slo" "jupyterhub-usage" "argo-workflow" "notebook-controller-slis")
 
     ## Use the search api make sure that our dashboards are indeed there
     for index in "${!dashboard_names[@]}"; do
@@ -48,7 +48,7 @@ function test_grafana() {
     header "Testing ODH Grafana installation"
 
     # Dashboards
-    dashboards=("odh-kafka" "odh-jupyterhub-sli" "odh-jupyterhub-usage" "odh-argo")
+    dashboards=("odh-kafka" "odh-jupyterhub-sli" "odh-jupyterhub-usage" "odh-argo" "odh-notebook-controller")
 
     # Verify Grafana operator is deployed and running
     os::cmd::expect_success "oc project ${ODHPROJECT}"

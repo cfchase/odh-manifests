@@ -11,6 +11,7 @@ spec:
         key: token
         name: odh.prometheus-k8s
       honorLabels: true
+      honorTimestamps: false
       params:
         'match[]':
           - '{__name__= "container_cpu_cfs_throttled_seconds_total"}'
@@ -22,10 +23,14 @@ spec:
           - '{__name__= "kube_pod_container_status_restarts_total"}'
           - '{__name__= "kube_pod_container_status_terminated_reason"}'
           - '{__name__= "kube_pod_container_status_waiting_reason"}'
+          - '{__name__= "kube_pod_container_resource_limits"}'
+          - '{__name__= "kube_pod_container_resource_requests"}'
           - '{__name__= "kube_pod_container_resource_requests_cpu_cores"}'
           - '{__name__= "kube_pod_container_resource_limits_cpu_cores"}'
           - '{__name__= "kube_pod_container_resource_requests_memory_bytes"}'
           - '{__name__= "kube_pod_container_resource_limits_memory_bytes"}'
+          - '{__name__= "kube_pod_status_phase"}'
+          - '{__name__= "kube_pod_labels"}'
       path: /federate
       port: web
       scheme: https
@@ -33,6 +38,9 @@ spec:
         insecureSkipVerify: true
       scrapeTimeout: 10s
       interval: 30s
+      metricRelabelings:
+        - action: labeldrop
+          regex: prometheus_replica
   namespaceSelector:
     matchNames:
       - openshift-monitoring
