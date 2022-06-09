@@ -27,17 +27,17 @@ spec:
       serviceAccount: odh-dashboard
       containers:
       - name: odh-dashboard
-        image: quay.io/opendatahub/odh-dashboard:v1.0
+        image: quay.io/cfchase/odh-dashboard:cchase-test
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources:
           requests:
-            cpu: 200m
-            memory: 100Mi
+            cpu: 300m
+            memory: 500Mi
           limits:
-            cpu: 400m
-            memory: 400Mi
+            cpu: 500m
+            memory: 4Gi
         livenessProbe:
           httpGet:
             path: /api/status
