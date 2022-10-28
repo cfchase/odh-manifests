@@ -3,10 +3,11 @@ kind: Kustomization
 commonLabels:
   app: odh-dashboard
   app.kubernetes.io/part-of: odh-dashboard
-bases:
-  - ../crd
-  - ../apps
 resources:
+- odh-dashboard-crd.yaml
+- odh-quick-start-crd.yaml
+- odh-document-crd.yaml
+- odh-application-crd.yaml
 - role.yaml
 - cluster-role.yaml
 - service-account.yaml
@@ -16,6 +17,12 @@ resources:
 - deployment.yaml
 - routes.yaml
 - service.yaml
+- create-jupyter-notebook-quickstart.yaml
+- deploy-python-model-quickstart.yaml
+- jupyter-app.yaml
+- jupyterhub-app.yaml
+- jupyter-docs.yaml
+
 images:
 - name: odh-dashboard
   newName: quay.io/opendatahub/odh-dashboard
