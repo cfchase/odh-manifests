@@ -25,5 +25,5 @@ resources:
 
 images:
 - name: odh-dashboard
-  newName: quay.io/cfchase/odh-dashboard
-  newTag: aisrhods-odh
+  newName: quay.io/opendatahub/odh-dashboard
+  newTag: main
